@@ -1,7 +1,9 @@
 const express = require('express')
 const app = express();
 const bodyParser = require('body-parser');
+const cors = require('cors');
 
+app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
@@ -21,17 +23,31 @@ var DB = {
             price: 30,
         },
         {
-            id: 5,
+            id: 3,
             title: 'PubG',
             year: 2020,
             price: 120,
+        }
+    ],
+    users: [
+        {
+            id: 1,
+            name: "Renan",
+            email: "renan@gmail.com",
+            pass: "123",
+        },
+        {
+            id: 2,
+            name: "Ana",
+            email: "ana@gmail.com",
+            pass: "321",
         }
     ]
 }
 
 
 app.get('/games', (req, res) => {
-    res.statusCode = 200;
+    res.statusCode(200);
     res.json(DB.games);
 })
 
@@ -110,9 +126,32 @@ app.put('/game/:id', (req, res) => {
             res.sendStatus(404);
         }
     }
-
 })
 
+app.post('/auth', (req, res) => {
+    var { email, pass } = req.body;
+
+    if (email != undefined) {
+
+        var user = DB.users.find(u => u.email == email);
+
+        if (user != undefined) {
+            if (user.pass == password) {
+                res.status(200);
+                res.json({ token: 'TOKEN' });
+            }
+
+        } else {
+            res.status(400);
+            res.json({ message: 'Credenciais Invalidas' })
+        }
+
+
+    } else {
+        res.status(400);
+        res.json({ message: 'O email é invalido' })
+    }
+})
 
 app.listen(8081, () => {
     console.log("API RODANDO")
